@@ -245,11 +245,6 @@
                 <h2>Welcome to DTP System</h2>
                 <p style="text-align: center; margin-bottom: 2rem; color: #666;">Please select your login type:</p>
                 
-                <!-- Debug button for testing -->
-                <div style="text-align: center; margin-bottom: 1rem;">
-                    <button id="testButton" style="padding: 0.5rem 1rem; background: #ccc; border: none; border-radius: 5px; cursor: pointer;">Test JavaScript</button>
-                </div>
-                
                 <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
                     <div id="adminLoginDiv" class="clickable-div" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 10px; text-align: center; cursor: pointer; min-width: 250px; transition: all 0.2s;">
                         <h3>Admin Login</h3>
@@ -268,7 +263,7 @@
                 <div style="text-align: center; margin-bottom: 1rem;">
                     <button class="btn" id="backToSelectionFromAdmin" style="background: #ccc; color: #333;">← Back to Selection</button>
                 </div>
-                <form onsubmit="adminLogin(event)">
+                <form id="adminLoginForm">
                     <div class="form-group">
                         <label>Admin Username:</label>
                         <input type="text" id="adminUsername" required placeholder="Enter admin username">
@@ -294,56 +289,40 @@
                 </div>
 
                 <div id="studentLogin" class="tab-content active">
-                    <form onsubmit="studentLogin(event)">
+                    <form id="studentLoginForm">
                         <div class="form-group">
                             <label>Email:</label>
                             <input type="email" id="studentLoginEmail" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Password:</label>
-                            <input type="password" id="studentLoginPassword" required>
                         </div>
                         <button type="submit" class="btn-primary">Login</button>
                     </form>
                 </div>
 
                 <div id="studentRegister" class="tab-content">
-                    <form onsubmit="studentRegister(event)">
+                    <form id="studentRegisterForm">
                         <div class="form-group">
                             <label>Full Name:</label>
-                            <input type="text" id="studentRegisterName" required>
+                            <input type="text" id="studentRegisterName" required 
+                                   placeholder="Enter your full name"
+                                   pattern=".{2,100}" title="Name must be between 2 and 100 characters">
                         </div>
                         <div class="form-group">
                             <label>Email:</label>
-                            <input type="email" id="studentRegisterEmail" required>
+                            <input type="email" id="studentRegisterEmail" required 
+                                   placeholder="Enter your email address">
                         </div>
                         <div class="form-group">
                             <label>Date of Birth:</label>
-                            <input type="date" id="studentRegisterDob" required>
-                            <small style="color: #666;">You must be between 16-18 years old to register</small>
+                            <input type="date" id="studentRegisterDob" required
+                                   min="2007-01-01" max="2009-12-31"
+                                   title="You must be between 16 and 18 years old">
                         </div>
-                        <div class="form-group">
-                            <label>Password:</label>
-                            <input type="password" id="studentRegisterPassword" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Confirm Password:</label>
-                            <input type="password" id="studentRegisterConfirmPassword" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Phone (Optional):</label>
-                            <input type="tel" id="studentRegisterPhone">
-                        </div>
-                        <div class="form-group">
-                            <label>School (Optional):</label>
-                            <input type="text" id="studentRegisterSchool">
-                        </div>
-                        <div class="form-group">
-                            <label>Guardian Contact (Optional):</label>
-                            <input type="text" id="studentRegisterGuardian" placeholder="Parent/Guardian phone or email">
-                        </div>
+                        <p class="hint" style="color: #666; font-size: 0.9em; margin-bottom: 1rem;">
+                            Note: You must be between 16 and 18 years old to register.
+                        </p>
                         <button type="submit" class="btn-primary">Sign Up</button>
                     </form>
+                    <div id="studentRegisterMessage"></div>
                 </div>
                 <div id="studentAuthMessage"></div>
             </div>
@@ -455,12 +434,9 @@
             const studentLoginDiv = document.getElementById('studentLoginDiv');
             
             if (adminLoginDiv) {
-                console.log('Adding direct listener to admin div');
                 adminLoginDiv.addEventListener('click', function(e) {
-                    console.log('Admin div clicked directly');
                     e.preventDefault();
                     e.stopPropagation();
-                    alert('Admin clicked!');
                     showLoginSection('admin');
                 });
                 
@@ -472,17 +448,12 @@
                 adminLoginDiv.addEventListener('mouseleave', function() {
                     this.style.transform = 'scale(1)';
                 });
-            } else {
-                console.log('Admin div not found!');
             }
             
             if (studentLoginDiv) {
-                console.log('Adding direct listener to student div');
                 studentLoginDiv.addEventListener('click', function(e) {
-                    console.log('Student div clicked directly');
                     e.preventDefault();
                     e.stopPropagation();
-                    alert('Student clicked!');
                     showLoginSection('student');
                 });
                 
@@ -494,8 +465,6 @@
                 studentLoginDiv.addEventListener('mouseleave', function() {
                     this.style.transform = 'scale(1)';
                 });
-            } else {
-                console.log('Student div not found!');
             }
             
             // Add event listeners for back buttons
@@ -539,6 +508,22 @@
                 });
             }
             
+            // Add form submit event listeners
+            const studentRegisterForm = document.getElementById('studentRegisterForm');
+            if (studentRegisterForm) {
+                studentRegisterForm.addEventListener('submit', studentRegister);
+            }
+
+            const adminLoginForm = document.getElementById('adminLoginForm');
+            if (adminLoginForm) {
+                adminLoginForm.addEventListener('submit', adminLogin);
+            }
+
+            const studentLoginForm = document.getElementById('studentLoginForm');
+            if (studentLoginForm) {
+                studentLoginForm.addEventListener('submit', studentLogin);
+            }
+
             if (authToken && userType) {
                 if (userType === 'admin') {
                     currentUser = { role: 'admin', full_name: 'Administrator' };
@@ -623,7 +608,6 @@
         async function studentLogin(event) {
             event.preventDefault();
             const email = document.getElementById('studentLoginEmail').value;
-            const password = document.getElementById('studentLoginPassword').value;
 
             try {
                 const response = await fetch(`${API_BASE}/auth/student/login`, {
@@ -631,7 +615,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ email })
                 });
 
                 const data = await response.json();
@@ -656,57 +640,45 @@
 
         async function studentRegister(event) {
             event.preventDefault();
-            const full_name = document.getElementById('studentRegisterName').value;
-            const email = document.getElementById('studentRegisterEmail').value;
-            const date_of_birth = document.getElementById('studentRegisterDob').value;
-            const password = document.getElementById('studentRegisterPassword').value;
-            const confirm_password = document.getElementById('studentRegisterConfirmPassword').value;
-            const phone = document.getElementById('studentRegisterPhone')?.value || '';
-            const school = document.getElementById('studentRegisterSchool')?.value || '';
-            const guardian_contact = document.getElementById('studentRegisterGuardian')?.value || '';
-
-            // Basic validation
-            if (password !== confirm_password) {
-                showMessage('studentAuthMessage', 'Passwords do not match', 'error');
-                return;
-            }
-
-            // Check age eligibility (16-18 years) - this will also be validated on the server
-            const birthDate = new Date(date_of_birth);
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
             
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-
-            if (age < 16 || age > 18) {
-                showMessage('studentAuthMessage', 'You must be between 16-18 years old to register', 'error');
-                return;
-            }
-
+            // Get form elements
+            const form = event.target;
+            const submitButton = form.querySelector('button[type="submit"]');
+            const messageDiv = document.getElementById('studentRegisterMessage');
+            
+            // Show loading state
+            const originalButtonText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Signing up...';
+            
             try {
+                // Get form data
+                const full_name = document.getElementById('studentRegisterName').value.trim();
+                const email = document.getElementById('studentRegisterEmail').value.trim();
+                const date_of_birth = document.getElementById('studentRegisterDob').value;
+
+                // Validate fields
+                if (!full_name || !email || !date_of_birth) {
+                    throw new Error('Please fill in all required fields');
+                }
+
+                // Send registration request
                 const response = await fetch(`${API_BASE}/auth/student/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 
-                        full_name, 
-                        email, 
-                        date_of_birth, 
-                        password, 
-                        confirm_password,
-                        phone,
-                        school,
-                        guardian_contact
+                    body: JSON.stringify({
+                        full_name,
+                        email,
+                        date_of_birth
                     })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
+                    // Store auth data
                     authToken = data.data.token;
                     userType = 'student';
                     currentUser = data.data.student;
@@ -714,13 +686,34 @@
                     localStorage.setItem('authToken', authToken);
                     localStorage.setItem('userType', userType);
                     
-                    updateStudentUI();
-                    showMessage('studentAuthMessage', 'Registration successful!', 'success');
+                    // Show success message and clear form
+                    messageDiv.innerHTML = `<div class="success">
+                        Registration successful! Redirecting to dashboard...
+                    </div>`;
+                    form.reset();
+                    
+                    // Redirect to dashboard after showing message
+                    setTimeout(() => {
+                        updateStudentUI();
+                        loadPodcasts();
+                        loadEvents();
+                    }, 1500);
                 } else {
-                    showMessage('studentAuthMessage', data.message, 'error');
+                    // Show error from server
+                    const errorMessage = data.message || 'Registration failed. Please try again.';
+                    messageDiv.innerHTML = `<div class="error">${errorMessage}</div>`;
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalButtonText;
                 }
             } catch (error) {
-                showMessage('studentAuthMessage', 'Registration failed. Please try again.', 'error');
+                // Show client-side error
+                const errorMessage = error.message || 'Registration failed. Please try again.';
+                messageDiv.innerHTML = `<div class="error">${errorMessage}</div>`;
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+                
+                // Scroll error into view
+                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 

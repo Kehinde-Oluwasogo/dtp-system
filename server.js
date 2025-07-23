@@ -27,10 +27,12 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+            scriptSrcAttr: ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'", "http://localhost:3000", "https://*"]
+            connectSrc: ["'self'", "http://localhost:3000", "https://*"],
+            formAction: ["'self'"]
         }
     }
 }));
@@ -66,7 +68,6 @@ const startServer = async () => {
     console.log('✅ Database initialized successfully');
     
     // Routes
-    app.use('/api/auth', authRoutes);
     app.use('/api/auth', studentAuthRoutes);
     // app.use('/api/podcasts', podcastRoutes);
     // app.use('/api/opendays', openDayRoutes);

@@ -21,7 +21,7 @@ const initializeDatabase = async () => {
     console.log('Database connection has been established successfully.');
     
     // Sync all models with the database
-    await sequelize.sync({ force: false }); // Set to true only if you want to drop existing tables
+    await sequelize.sync({ force: true }); // Forcing recreation of tables with new schema
     console.log('All models have been synchronized with the database.');
     
     return true;
