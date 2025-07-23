@@ -19,8 +19,21 @@ const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
+// Trust proxy settings
+app.set('trust proxy', 1);
+
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "https:"],
+            connectSrc: ["'self'", "http://localhost:3000", "https://*"]
+        }
+    }
+}));
 app.use(cors());
 
 // Rate limiting
