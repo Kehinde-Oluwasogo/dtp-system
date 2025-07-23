@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DTP System - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+        }
+
+        .auth-status {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin: 1rem 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .podcast-list,
+        .event-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .podcast-item,
+        .event-item {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .success {
+            background: #efe;
+            color: #363;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+        .clickable-div {
+            position: relative;
+            z-index: 10;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .clickable-div:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .clickable-div:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <h1>DTP System Demo</h1>
+                <div class="auth-status">
+                    <span id="userStatus">Not logged in</span>
+                    <button class="btn" id="authBtn" onclick="showAuthModal()">Login</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- User Type Selection -->
+            <div class="section" id="userTypeSection">
+                <h2>Welcome to DTP System</h2>
+                <p style="text-align: center; margin-bottom: 2rem; color: #666;">Please select your login type:</p>
+                
+                <!-- Debug button for testing -->
+                <div style="text-align: center; margin-bottom: 1rem;">
+                    <button id="testButton" style="padding: 0.5rem 1rem; background: #ccc; border: none; border-radius: 5px; cursor: pointer;">Test JavaScript</button>
+                </div>
+                
+                <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+                    <div id="adminLoginDiv" class="clickable-div" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 10px; text-align: center; cursor: pointer; min-width: 250px; transition: all 0.2s;">
+                        <h3>Admin Login</h3>
+                        <p>Access admin panel and manage content</p>
+                    </div>
+                    <div id="studentLoginDiv" class="clickable-div" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 2rem; border-radius: 10px; text-align: center; cursor: pointer; min-width: 250px; transition: all 0.2s;">
+                        <h3>Student Portal</h3>
+                        <p>Access podcasts and events</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Login Section -->
+            <div class="section hidden" id="adminLoginSection">
+                <h2>Admin Login</h2>
+                <div style="text-align: center; margin-bottom: 1rem;">
+                    <button class="btn" id="backToSelectionFromAdmin" style="background: #ccc; color: #333;">← Back to Selection</button>
+                </div>
+                <form onsubmit="adminLogin(event)">
+                    <div class="form-group">
+                        <label>Admin Username:</label>
+                        <input type="text" id="adminUsername" required placeholder="Enter admin username">
+                    </div>
+                    <div class="form-group">
+                        <label>Admin Password:</label>
+                        <input type="password" id="adminPassword" required placeholder="Enter admin password">
+                    </div>
+                    <button type="submit" class="btn-primary">Login as Admin</button>
+                </form>
+                <div id="adminAuthMessage"></div>
+            </div>
+
+            <!-- Student Authentication Section -->
+            <div class="section hidden" id="studentAuthSection">
+                <h2>Student Portal</h2>
+                <div style="text-align: center; margin-bottom: 1rem;">
+                    <button class="btn" id="backToSelectionFromStudent" style="background: #ccc; color: #333;">← Back to Selection</button>
+                </div>
+                <div class="tabs">
+                    <div class="tab active" id="studentLoginTab">Login</div>
+                    <div class="tab" id="studentRegisterTab">Sign Up</div>
+                </div>
+
+                <div id="studentLogin" class="tab-content active">
+                    <form onsubmit="studentLogin(event)">
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="studentLoginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="studentLoginPassword" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Login</button>
+                    </form>
+                </div>
+
+                <div id="studentRegister" class="tab-content">
+                    <form onsubmit="studentRegister(event)">
+                        <div class="form-group">
+                            <label>Full Name:</label>
+                            <input type="text" id="studentRegisterName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="studentRegisterEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth:</label>
+                            <input type="date" id="studentRegisterDob" required>
+                            <small style="color: #666;">You must be between 16-18 years old to register</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="studentRegisterPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password:</label>
+                            <input type="password" id="studentRegisterConfirmPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone (Optional):</label>
+                            <input type="tel" id="studentRegisterPhone">
+                        </div>
+                        <div class="form-group">
+                            <label>School (Optional):</label>
+                            <input type="text" id="studentRegisterSchool">
+                        </div>
+                        <div class="form-group">
+                            <label>Guardian Contact (Optional):</label>
+                            <input type="text" id="studentRegisterGuardian" placeholder="Parent/Guardian phone or email">
+                        </div>
+                        <button type="submit" class="btn-primary">Sign Up</button>
+                    </form>
+                </div>
+                <div id="studentAuthMessage"></div>
+            </div>
+
+            <!-- Student Dashboard Section -->
+            <div class="section hidden" id="studentDashboardSection">
+                <h2>Student Dashboard</h2>
+                <div class="tabs">
+                    <div class="tab active" id="podcastsTab">Podcasts</div>
+                    <div class="tab" id="eventsTab">Open Days</div>
+                </div>
+
+                <div id="podcasts" class="tab-content active">
+                    <h3>Available Podcasts</h3>
+                    <div id="podcastList" class="podcast-list">
+                        <div class="loading"></div>
+                    </div>
+                </div>
+
+                <div id="events" class="tab-content">
+                    <h3>Upcoming Open Day Events</h3>
+                    <div id="eventList" class="event-list">
+                        <div class="loading"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div class="section hidden" id="adminSection">
+                <h2>Admin Panel</h2>
+                <div class="grid">
+                    <div>
+                        <h3>Upload Podcast</h3>
+                        <form onsubmit="uploadPodcast(event)">
+                            <div class="form-group">
+                                <label>Title:</label>
+                                <input type="text" id="podcastTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea id="podcastDescription" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Audio File:</label>
+                                <input type="file" id="podcastFile" accept="audio/*" required>
+                            </div>
+                            <button type="submit" class="btn-primary">Upload Podcast</button>
+                        </form>
+                    </div>
+
+                    <div>
+                        <h3>Create Open Day Event</h3>
+                        <form onsubmit="createEvent(event)">
+                            <div class="form-group">
+                                <label>Event Name:</label>
+                                <input type="text" id="eventName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea id="eventDescription" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Date & Time:</label>
+                                <input type="datetime-local" id="eventDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location:</label>
+                                <input type="text" id="eventLocation" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Capacity:</label>
+                                <input type="number" id="eventCapacity" min="1" value="100">
+                            </div>
+                            <button type="submit" class="btn-primary">Create Event</button>
+                        </form>
+                    </div>
+                </div>
+                <div id="adminMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let currentUser = null;
+        let authToken = localStorage.getItem('authToken');
+        let userType = localStorage.getItem('userType'); // 'admin' or 'student'
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, authToken:', authToken, 'userType:', userType);
+            
+            // Debug: Check if key elements exist
+            console.log('userTypeSection exists:', !!document.getElementById('userTypeSection'));
+            console.log('adminLoginSection exists:', !!document.getElementById('adminLoginSection'));
+            console.log('studentAuthSection exists:', !!document.getElementById('studentAuthSection'));
+            
+            // Add event listener for test button
+            const testButton = document.getElementById('testButton');
+            if (testButton) {
+                testButton.addEventListener('click', function() {
+                    alert('JavaScript is working!');
+                    console.log('Test button clicked');
+                });
+            }
+            
+            // Add event listeners for the login type selection
+            const adminLoginDiv = document.getElementById('adminLoginDiv');
+            const studentLoginDiv = document.getElementById('studentLoginDiv');
+            
+            if (adminLoginDiv) {
+                console.log('Adding direct listener to admin div');
+                adminLoginDiv.addEventListener('click', function(e) {
+                    console.log('Admin div clicked directly');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert('Admin clicked!');
+                    showLoginSection('admin');
+                });
+                
+                // Add visual feedback
+                adminLoginDiv.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'transform 0.2s';
+                });
+                adminLoginDiv.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            } else {
+                console.log('Admin div not found!');
+            }
+            
+            if (studentLoginDiv) {
+                console.log('Adding direct listener to student div');
+                studentLoginDiv.addEventListener('click', function(e) {
+                    console.log('Student div clicked directly');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert('Student clicked!');
+                    showLoginSection('student');
+                });
+                
+                // Add visual feedback
+                studentLoginDiv.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'transform 0.2s';
+                });
+                studentLoginDiv.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            } else {
+                console.log('Student div not found!');
+            }
+            
+            // Add event listeners for back buttons
+            const backToSelectionFromAdmin = document.getElementById('backToSelectionFromAdmin');
+            if (backToSelectionFromAdmin) {
+                backToSelectionFromAdmin.addEventListener('click', showUserTypeSection);
+            }
+            
+            const backToSelectionFromStudent = document.getElementById('backToSelectionFromStudent');
+            if (backToSelectionFromStudent) {
+                backToSelectionFromStudent.addEventListener('click', showUserTypeSection);
+            }
+            
+            // Add event listeners for student auth tabs
+            const studentLoginTab = document.getElementById('studentLoginTab');
+            if (studentLoginTab) {
+                studentLoginTab.addEventListener('click', function() {
+                    showStudentTab('studentLogin');
+                });
+            }
+            
+            const studentRegisterTab = document.getElementById('studentRegisterTab');
+            if (studentRegisterTab) {
+                studentRegisterTab.addEventListener('click', function() {
+                    showStudentTab('studentRegister');
+                });
+            }
+            
+            // Add event listeners for dashboard tabs
+            const podcastsTab = document.getElementById('podcastsTab');
+            if (podcastsTab) {
+                podcastsTab.addEventListener('click', function() {
+                    showDashTab('podcasts');
+                });
+            }
+            
+            const eventsTab = document.getElementById('eventsTab');
+            if (eventsTab) {
+                eventsTab.addEventListener('click', function() {
+                    showDashTab('events');
+                });
+            }
+            
+            if (authToken && userType) {
+                if (userType === 'admin') {
+                    currentUser = { role: 'admin', full_name: 'Administrator' };
+                    updateAdminUI();
+                } else {
+                    fetchStudentProfile();
+                }
+            } else {
+                showUserTypeSection();
+            }
+        });
+
+        // UI Navigation functions
+        function showUserTypeSection() {
+            hideAllSections();
+            document.getElementById('userTypeSection').classList.remove('hidden');
+            document.getElementById('userStatus').textContent = 'Not logged in';
+            document.getElementById('authBtn').textContent = 'Select Login Type';
+            document.getElementById('authBtn').onclick = showUserTypeSection;
+        }
+
+        function showLoginSection(type) {
+            console.log('showLoginSection called with type:', type);
+            hideAllSections();
+            if (type === 'admin') {
+                console.log('Showing admin login section');
+                document.getElementById('adminLoginSection').classList.remove('hidden');
+            } else {
+                console.log('Showing student auth section');
+                document.getElementById('studentAuthSection').classList.remove('hidden');
+            }
+        }
+
+        function hideAllSections() {
+            console.log('hideAllSections called');
+            const sections = ['userTypeSection', 'adminLoginSection', 'studentAuthSection', 'studentDashboardSection', 'adminSection'];
+            sections.forEach(section => {
+                const element = document.getElementById(section);
+                console.log('Hiding section:', section, element ? 'found' : 'not found');
+                if (element) {
+                    element.classList.add('hidden');
+                }
+            });
+        }
+
+        // Admin Authentication
+        async function adminLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    authToken = data.data.token;
+                    userType = 'admin';
+                    currentUser = data.data.admin;
+                    
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('userType', userType);
+                    
+                    updateAdminUI();
+                    showMessage('adminAuthMessage', 'Admin login successful!', 'success');
+                } else {
+                    showMessage('adminAuthMessage', data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('adminAuthMessage', 'Admin login failed. Please try again.', 'error');
+            }
+        }
+
+        // Student Authentication
+        async function studentLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('studentLoginEmail').value;
+            const password = document.getElementById('studentLoginPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/student/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    authToken = data.data.token;
+                    userType = 'student';
+                    currentUser = data.data.student;
+                    
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('userType', userType);
+                    
+                    updateStudentUI();
+                    showMessage('studentAuthMessage', 'Login successful!', 'success');
+                } else {
+                    showMessage('studentAuthMessage', data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('studentAuthMessage', 'Login failed. Please try again.', 'error');
+            }
+        }
+
+        async function studentRegister(event) {
+            event.preventDefault();
+            const full_name = document.getElementById('studentRegisterName').value;
+            const email = document.getElementById('studentRegisterEmail').value;
+            const date_of_birth = document.getElementById('studentRegisterDob').value;
+            const password = document.getElementById('studentRegisterPassword').value;
+            const confirm_password = document.getElementById('studentRegisterConfirmPassword').value;
+            const phone = document.getElementById('studentRegisterPhone')?.value || '';
+            const school = document.getElementById('studentRegisterSchool')?.value || '';
+            const guardian_contact = document.getElementById('studentRegisterGuardian')?.value || '';
+
+            // Basic validation
+            if (password !== confirm_password) {
+                showMessage('studentAuthMessage', 'Passwords do not match', 'error');
+                return;
+            }
+
+            // Check age eligibility (16-18 years) - this will also be validated on the server
+            const birthDate = new Date(date_of_birth);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            if (age < 16 || age > 18) {
+                showMessage('studentAuthMessage', 'You must be between 16-18 years old to register', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/student/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        full_name, 
+                        email, 
+                        date_of_birth, 
+                        password, 
+                        confirm_password,
+                        phone,
+                        school,
+                        guardian_contact
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    authToken = data.data.token;
+                    userType = 'student';
+                    currentUser = data.data.student;
+                    
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('userType', userType);
+                    
+                    updateStudentUI();
+                    showMessage('studentAuthMessage', 'Registration successful!', 'success');
+                } else {
+                    showMessage('studentAuthMessage', data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('studentAuthMessage', 'Registration failed. Please try again.', 'error');
+            }
+        }
+
+        async function fetchStudentProfile() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = data.data.user;
+                    userType = 'student';
+                    updateStudentUI();
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                logout();
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            userType = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userType');
+            showUserTypeSection();
+        }
+
+        function updateAdminUI() {
+            const userStatus = document.getElementById('userStatus');
+            const authBtn = document.getElementById('authBtn');
+            
+            userStatus.textContent = `Welcome, ${currentUser.full_name}`;
+            authBtn.textContent = 'Logout';
+            authBtn.onclick = logout;
+            
+            hideAllSections();
+            document.getElementById('adminSection').classList.remove('hidden');
+        }
+
+        function updateStudentUI() {
+            const userStatus = document.getElementById('userStatus');
+            const authBtn = document.getElementById('authBtn');
+            
+            userStatus.textContent = `Welcome, ${currentUser.full_name}`;
+            authBtn.textContent = 'Logout';
+            authBtn.onclick = logout;
+            
+            hideAllSections();
+            document.getElementById('studentDashboardSection').classList.remove('hidden');
+            
+            loadPodcasts();
+            loadEvents();
+        }
+
+        // Data loading functions
+        async function loadPodcasts() {
+            try {
+                const response = await fetch(`${API_BASE}/podcasts`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayPodcasts(data.data.podcasts);
+                }
+            } catch (error) {
+                console.error('Error loading podcasts:', error);
+            }
+        }
+
+        async function loadEvents() {
+            try {
+                const response = await fetch(`${API_BASE}/opendays`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayEvents(data.data.opendays);
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        function displayPodcasts(podcasts) {
+            const container = document.getElementById('podcastList');
+            container.innerHTML = '';
+
+            if (podcasts.length === 0) {
+                container.innerHTML = '<p>No podcasts available.</p>';
+                return;
+            }
+
+            podcasts.forEach(podcast => {
+                const div = document.createElement('div');
+                div.className = 'podcast-item';
+                div.innerHTML = `
+                    <h4>${podcast.title}</h4>
+                    <p>${podcast.description}</p>
+                    <small>By: ${podcast.uploaded_by?.full_name || 'Unknown'} | Plays: ${podcast.play_count}</small>
+                    <br>
+                    <button class="btn-primary" onclick="playPodcast('${podcast._id}')">Play</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function displayEvents(events) {
+            const container = document.getElementById('eventList');
+            container.innerHTML = '';
+
+            if (events.length === 0) {
+                container.innerHTML = '<p>No upcoming events.</p>';
+                return;
+            }
+
+            events.forEach(event => {
+                const div = document.createElement('div');
+                div.className = 'event-item';
+                const eventDate = new Date(event.date).toLocaleDateString();
+                div.innerHTML = `
+                    <h4>${event.event_name}</h4>
+                    <p>${event.description}</p>
+                    <small>Date: ${eventDate} | Location: ${event.location}</small>
+                    <br>
+                    ${currentUser && currentUser.is_eligible ? 
+                        `<button class="btn-primary" onclick="registerForEvent('${event._id}')">Register</button>` :
+                        '<span style="color: #999;">Registration requires eligibility</span>'
+                    }
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Action functions
+        async function playPodcast(podcastId) {
+            try {
+                await fetch(`${API_BASE}/podcasts/${podcastId}/play`, {
+                    method: 'POST'
+                });
+                
+                // Reload podcasts to update play count
+                loadPodcasts();
+            } catch (error) {
+                console.error('Error playing podcast:', error);
+            }
+        }
+
+        async function registerForEvent(eventId) {
+            if (!authToken) {
+                alert('Please log in to register for events.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/opendays/${eventId}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Successfully registered for the event!');
+                    loadEvents();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('Registration failed. Please try again.');
+            }
+        }
+
+        // Admin functions
+        async function uploadPodcast(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('podcastTitle').value;
+            const description = document.getElementById('podcastDescription').value;
+            const file = document.getElementById('podcastFile').files[0];
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('audio', file);
+
+            try {
+                const response = await fetch(`${API_BASE}/podcasts`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage('adminMessage', 'Podcast uploaded successfully!', 'success');
+                    document.querySelector('#adminSection form').reset();
+                    loadPodcasts();
+                } else {
+                    showMessage('adminMessage', data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('adminMessage', 'Upload failed. Please try again.', 'error');
+            }
+        }
+
+        async function createEvent(event) {
+            event.preventDefault();
+            
+            const event_name = document.getElementById('eventName').value;
+            const description = document.getElementById('eventDescription').value;
+            const date = document.getElementById('eventDate').value;
+            const location = document.getElementById('eventLocation').value;
+            const capacity = document.getElementById('eventCapacity').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/opendays`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        event_name,
+                        description,
+                        date,
+                        location,
+                        capacity: parseInt(capacity)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage('adminMessage', 'Event created successfully!', 'success');
+                    document.querySelector('#adminSection form:last-of-type').reset();
+                    loadEvents();
+                } else {
+                    showMessage('adminMessage', data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('adminMessage', 'Event creation failed. Please try again.', 'error');
+            }
+        }
+
+        // UI helper functions
+        function showStudentTab(tabName) {
+            const tabs = document.querySelectorAll('#studentAuthSection .tab');
+            const contents = document.querySelectorAll('#studentAuthSection .tab-content');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function showDashTab(tabName) {
+            const tabs = document.querySelectorAll('#studentDashboardSection .tab');
+            const contents = document.querySelectorAll('#studentDashboardSection .tab-content');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function showMessage(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="${type}">${message}</div>`;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
