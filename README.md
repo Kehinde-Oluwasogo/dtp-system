@@ -1,53 +1,133 @@
-# DTP System Prototype
+# DTP System - Digital Transformation Platform
 
-A prototype implementation of the DTP (Digital Transformation Platform) system built with Node.js, Express.js, and MongoDB following MVC architecture.
+A complete full-stack web application built with Node.js, Express.js, and Sequelize ORM following MVC architecture. Features separate Admin and Student portals with age-restricted student registration.
 
-## 🏗️ Architecture Overview
+## � Live Demo
+
+The application provides:
+- **Admin Portal**: Content management for podcasts and events
+- **Student Portal**: Access to podcasts and event registration (Ages 16-18)
+- **Responsive Design**: Works on desktop and mobile devices
+- **Real-time Updates**: Dynamic content loading and user feedback
+
+## 🏗️ Architecture
 
 ```
-[Frontend (React)]
+Frontend (HTML/CSS/JavaScript)
      |
-     |--> Auth Service (Firebase Auth or custom JWT service)
+     |--> Event Listeners (CSP Compliant)
      |--> REST API Calls
      |
-[Backend (Node.js + Express)]
+Backend (Node.js + Express.js)
      |
-     |--> User Controller
-     |--> Podcast Controller
-     |--> Open Day Controller
+     |--> Authentication Controller (JWT)
+     |--> Podcast Controller (Disabled for prototype)
+     |--> Open Day Controller (Disabled for prototype)
      |
-     |--> Database (MongoDB)
-             |--> Users Collection
-             |--> Podcasts Collection
-             |--> OpenDays Collection
-
-[Media Hosting Service (Cloudinary)]
+     |--> Sequelize ORM
+             |--> SQLite Database
+                  |--> Students Table
+                  |--> Podcasts Table  
+                  |--> Open Days Table
 ```
 
-## 🚀 Features
+## 🚀 Key Features
 
-### User Management
-- User registration with age eligibility checking
-- JWT-based authentication
-- Role-based access control (User/Admin)
-- Profile management
-- Password management
+### 👥 Dual Portal System
+- **Separate Authentication**: Distinct login flows for Admin and Students
+- **Role-Based Access**: Different interfaces and permissions
+- **Secure Session Management**: JWT-based authentication with localStorage
 
-### Podcast System
-- Audio file upload to Cloudinary
-- Podcast metadata management
-- Play count tracking
-- Search and filtering
-- Admin-only podcast creation
+### 🎓 Student Features
+- **Age-Restricted Registration**: Only students aged 16-18 can register
+- **Profile Management**: Full name, email, school, guardian contact
+- **Content Access**: View podcasts and events after authentication
+- **Event Registration**: Register for open day events
 
-### Open Day Events
-- Event creation and management
-- User registration for events
-- Capacity management
-- Date-based filtering
-- Registration deadline handling
+### 🔧 Admin Features  
+- **Content Management**: Upload podcasts and create events
+- **User Oversight**: Manage student registrations and eligibility
+- **Analytics**: Track podcast plays and event registrations
 
-## 📋 API Endpoints
+### 🛡️ Security & Compliance
+- **Content Security Policy**: CSP-compliant event handling
+- **Password Hashing**: bcrypt for secure password storage
+- **Input Validation**: Server-side and client-side validation
+- **Age Verification**: Automatic eligibility checking
+
+## �️ Technology Stack
+
+- **Backend**: Node.js, Express.js
+- **Database**: SQLite with Sequelize ORM  
+- **Authentication**: JWT (JSON Web Tokens)
+- **Frontend**: Vanilla HTML/CSS/JavaScript
+- **Security**: bcrypt, Helmet, CORS, Rate Limiting
+- **Development**: Nodemon, ESLint
+
+## 📦 Installation & Setup
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn package manager
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/dtp-system.git
+cd dtp-system
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Environment Setup
+Create a `.env` file in the root directory:
+```env
+NODE_ENV=development
+PORT=3000
+JWT_SECRET=your-super-secret-jwt-key-here
+DATABASE_URL=./database.sqlite
+```
+
+### 4. Initialize Database
+```bash
+npm run db:migrate
+# Or start the server (it will auto-create tables)
+npm start
+```
+
+### 5. Start the Application
+```bash
+# Development mode (with auto-restart)
+npm run dev
+
+# Production mode
+npm start
+```
+
+The application will be available at `http://localhost:3000`
+
+## 🎯 Usage Guide
+
+### For Students (Ages 16-18)
+1. **Registration**: Click "Student Portal" → "Sign Up"
+   - Enter personal details and date of birth
+   - System automatically validates age eligibility
+   - Complete registration with password confirmation
+
+2. **Login**: Use email and password to access student dashboard
+3. **Browse Content**: View available podcasts and upcoming events
+4. **Event Registration**: Register for open day events
+
+### For Administrators
+1. **Login**: Click "Admin Login" with admin credentials
+2. **Content Management**: 
+   - Upload new podcasts with audio files
+   - Create open day events with date, location, and capacity
+3. **User Management**: Monitor student registrations and activity
+
+## 🔧 API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
